@@ -11,20 +11,33 @@ paths:
 image_params:
   img_width: 1600
   img_height: 256
-  target_width: 518
-  target_height: 518
+  target_width: 224
+  target_height: 224
 
-processing_params:
+extract_patches:
+  save_dir_patches: "./patches/images"
+  annotation_path: "./patches/patches_annotation.json"
   min_contour_area: 32
   min_bbox_size: 8
   class_ids: [1, 2, 3, 4]
   context: 0.2
+  max_patches_per_img: 5
 
 extract_features:
+  annotation_path: "./patches/patches_annotation.json"
+  save_dir_patches: "./patches/images"
 
+
+ssl_dino_finetune:
+  annotation_path: "./patches/patches_annotation.json"
+  save_dir_patches: "./patches/images"
+  target_size: 224
+  epochs: 3
+  batch_size: 32
+  learning_rate: 1e-6
+  weight_decay: 1e-4
 
 training:
   max_images: null 
-  max_patches_per_img: 5
   epochs_ssl: 3
   device: "cuda"  

@@ -8,6 +8,7 @@ DINO/
 dataset/
 visualize/
 patches/
+result/
 
 # Игнорировать ВСЕ файлы весов YOLO
 *.pt

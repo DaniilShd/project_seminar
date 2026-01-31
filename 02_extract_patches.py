@@ -12,11 +12,12 @@ with open("config.yaml", "r") as f:
     cfg = yaml.safe_load(f)
 
 ANNOTATION_PATH = Path(cfg["paths"]["annotation_path"])
-SAVE_DIR = Path(cfg["paths"]["save_dir_patches"])
+ANNOTATION_PATH_PATCHES = Path(cfg["extract_patches"]["annotation_path"])
+SAVE_DIR = Path(cfg["extract_patches"]["save_dir_patches"])
 PATH_VISUALIZE = Path(cfg["paths"]["path_visualize"])
 TARGET_SIZE = (cfg["image_params"]["target_width"], cfg["image_params"]["target_height"])
-CONTEXT = cfg["processing_params"].get("context", 0.2)
-MAX_PATCHES_PER_IMG = cfg["training"].get("max_patches_per_img", 5)
+CONTEXT = cfg["extract_patches"].get("context", 0.2)
+MAX_PATCHES_PER_IMG = cfg["extract_patches"].get("max_patches_per_img", 5)
 
 
 
@@ -127,7 +128,7 @@ if __name__ == "__main__":
                 visualize_patch_extraction(img_path, bbox, square_bbox, patch, PATH_VISUALIZE)
 
     # Сохраняем аннотацию к патчам
-    annotation_file = SAVE_DIR / "patches_annotation.json"
+    annotation_file = ANNOTATION_PATH_PATCHES / "patches_annotation.json"
     with open(annotation_file, "w") as f:
         json.dump(patches_annotation, f, indent=2)
 
