@@ -1,0 +1,20 @@
+paths:
+  csv_path: "./dataset/train.csv"
+  img_dir: "./dataset/train_images"
+  save_path: "./dataset/annotations.json"
+  image_dir: "./data/images/"
+  annotation_path: "./dataset/annotations.json"
+  save_dir: "result/"
+  path_visualize: "./visualize"
+
+image_params:
+  img_width: 1600
+  img_height: 256
+  target_width: 518
+  target_height: 518
+
+training:
+  max_images: null 
+  max_patches_per_img: 5
+  epochs_ssl: 3
+  device: "cuda"  
