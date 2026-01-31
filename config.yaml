@@ -6,12 +6,22 @@ paths:
   annotation_path: "./dataset/annotations.json"
   save_dir: "result/"
   path_visualize: "./visualize"
+  save_dir_patches: "./patches/images"
 
 image_params:
   img_width: 1600
   img_height: 256
   target_width: 518
   target_height: 518
+
+processing_params:
+  min_contour_area: 32
+  min_bbox_size: 8
+  class_ids: [1, 2, 3, 4]
+  context: 0.2
+
+extract_features:
+
 
 training:
   max_images: null 
