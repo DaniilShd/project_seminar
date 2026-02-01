@@ -13,7 +13,7 @@
 ![alt text](readme_images/b1d3f12b6_extraction.png)
 _Пример вырезанного патча дефекта с контекстом (шаг 2)._
 
-[alt text](readme_images/features_pca.png)
+![alt text](readme_images/features_pca.png)
 \*PCA-проекция признаков, извлеченных предобученной DINOv2 (шаг 3).\*
 
 ![alt text](readme_images/ssl_features_pca.png)
