@@ -30,20 +30,20 @@ _Совмещенные матрицы ошибок (Confusion Matrix) всех 
         
     *   Разместить его в локальной директории:
         
-        bash
-        
-        mkdir \-p ~/.kaggle
-        mv /путь/к/kaggle.json ~/.kaggle/
-        chmod 600 ~/.kaggle/kaggle.json
+        ```bash
+        git clone https://github.com/DaniilShd/project_seminar.git
+        cd project_seminar
+        pip install -r requirements.txt
+        ```
         
 2.  **Установка зависимостей:**
     
-    bash
+    ```bash
     
     git clone https://github.com/DaniilShd/project\_seminar.git
     cd project\_seminar
     pip install \-r requirements.txt
-    
+    ```
 3.  **Последовательный запуск пайплайна:**  
     Все глобальные переменные (пути, гиперпараметры) хранятся в `config.yaml`.
     
@@ -68,10 +68,10 @@ _Совмещенные матрицы ошибок (Confusion Matrix) всех 
 Основные зависимости перечислены в `requirements.txt`: torch, torchvision, scikit-learn, opencv-python, pandas, numpy, matplotlib, seaborn, pyyaml, kaggle.
 
 **Лицензия**  
-Проект распространяется под лицензией **MIT License**. См. файл `LICENSE`.
+Проект распространяется под лицензией **MIT License**.
 
-**Ссылка на отчёт**  
-Полный текстовый отчет по проекту доступен в репозитории: `report/final_report.pdf`.
+**Ссылка на презентацию**  
+Презентация по проекту доступна в репозитории: `report/presentation.pdf`.
 
 * * *
 
