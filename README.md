@@ -79,18 +79,12 @@ _Совмещенные матрицы ошибок (Confusion Matrix) всех 
 
 После выполнения пайплайна генерируется сводная таблица метрик:
 
-**RESULTS TABLE:**
-
-text
-
-\==========================================================================================
-Model                               Parameters   Accuracy   Inference Time  Compression  Improvement
-==========================================================================================
-Linear Probe (Original)             1540         92.23%     1.57ms          NaN          NaN
-Neural Network (Teacher)            57796        94.32%     43.40ms         NaN          NaN
-Tiny Student (Distilled)            26852        93.77%     513.55µs        2.2x         -0.55%
-Linear Probe (SSL Finetuned)        1540         92.49%     1.08ms          NaN          +0.26%
-==========================================================================================
+| Model | Parameters | Accuracy | Inference Time | Compression | Improvement |
+|-------|------------|----------|----------------|-------------|-------------|
+| Linear Probe (Original) | 1540 | 92.23% | 1.57ms | — | — |
+| Neural Network (Teacher) | 57796 | 94.32% | 43.40ms | — | — |
+| Tiny Student (Distilled) | 26852 | 93.77% | 513.55µs | 2.2x | -0.55% |
+| Linear Probe (SSL Finetuned) | 1540 | 92.49% | 1.08ms | — | +0.26% |
 
 **Выводы на основании результатов:**
 
