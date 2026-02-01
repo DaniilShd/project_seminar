@@ -5,19 +5,21 @@
 
 **Скриншоты демонстрации**  
 В ходе работы пайплайна генерируются следующие ключевые визуализации:  
-[https://readme\_images/0002cc93b.jpg\_annotated.png](https://readme_images/0002cc93b.jpg_annotated.png)  
+![alt text](readme_images/0002cc93b.jpg_annotated.png)
+![alt text](readme_images/0007a71bf.jpg_annotated.png) 
 \*Визуализация bounding boxes, извлеченных из RLE-разметки (шаг 1).\*
 
-[https://readme\_images/5bcc61d96\_extraction.png](https://readme_images/5bcc61d96_extraction.png)  
+![alt text](readme_images/5bcc61d96_extraction.png)
+![alt text](readme_images/b1d3f12b6_extraction.png)
 _Пример вырезанного патча дефекта с контекстом (шаг 2)._
 
-[https://readme\_images/features\_pca.png](https://readme_images/features_pca.png)  
+[alt text](readme_images/features_pca.png)
 \*PCA-проекция признаков, извлеченных предобученной DINOv2 (шаг 3).\*
 
-[https://readme\_images/ssl\_features\_pca.png](https://readme_images/ssl_features_pca.png)  
+![alt text](readme_images/ssl_features_pca.png)
 \*PCA-проекция признаков после SSL-дообучения DINOv2 (шаг 5).\*
 
-[https://readme\_images/all\_confusion\_matrices.png](https://readme_images/all_confusion_matrices.png)  
+![alt text](readme_images/all_confusion_matrices.png)
 _Совмещенные матрицы ошибок (Confusion Matrix) всех финальных моделей (шаг 7)._
 
 **Инструкция по установке и запуску**
