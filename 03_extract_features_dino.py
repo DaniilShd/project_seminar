@@ -42,7 +42,7 @@ class PatchDataset(Dataset):
         info = self.annotations[patch_name]
         patch_path = PATCH_DIR / patch_name
         patch = Image.open(patch_path).convert('RGB')
-        label = info["class"] - 1  # вычитаем 1, как в предыдущем скрипте
+        label = info["class"] - 1  
 
         if self.transform:
             patch = self.transform(patch)
