@@ -1,36 +1,24 @@
-import torch
-from torch.utils.data import Dataset, DataLoader
 import numpy as np
-from tqdm import tqdm
+from sklearn.decomposition import PCA
+import matplotlib.pyplot as plt
 
-def extract_features(dataset, model, batch_size=32, device=None):
-    """Извлечение фичей из патчей с очисткой памяти"""
-    if device is None:
-        device = next(model.parameters()).device
-    
-    loader = DataLoader(dataset, batch_size=batch_size, shuffle=False, 
-                       num_workers=0)  # Установите num_workers=0 для избежания проблем с памятью
-    all_features = []
-    all_labels = []
-    
-    model.eval()
-    model.to(device)
-    
-    with torch.no_grad():
-        for batch, lbl in tqdm(loader, desc="Extracting features"):
-            batch = batch.to(device)
-            feats = model(batch)
-            
-            # Немедленно переносим на CPU и освобождаем GPU память
-            all_features.append(feats.cpu().numpy())
-            all_labels.append(lbl.numpy())
-            
-            # Явное удаление тензоров для освобождения памяти
-            del batch, feats
-            
-    
-    # Конкатенируем все батчи
-    if all_features:
-        return np.vstack(all_features), np.concatenate(all_labels)
-    else:
-        return np.array([]), np.array([])
+def visualize_features(features, labels, save_path):
+    # Ограничение до 500 точек для визуализации
+    if len(features) > 500:
+        idx = np.random.choice(len(features), 500, replace=False)
+        features = features[idx]
+        labels = labels[idx]
+
+    pca = PCA(n_components=2)
+    features_2d = pca.fit_transform(features)
+
+    plt.figure(figsize=(10, 8))
+    plt.scatter(features_2d[:, 0], features_2d[:, 1], c=labels, cmap='tab10', alpha=0.7, s=50)
+    plt.colorbar(label='Class')
+    plt.title(f"PCA of Features (Points: {len(features)})")
+    plt.xlabel("PC1")
+    plt.ylabel("PC2")
+    plt.grid(True, alpha=0.3)
+    plt.tight_layout()
+    plt.savefig(save_path, dpi=100, bbox_inches='tight')
+    return pca

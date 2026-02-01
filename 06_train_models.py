@@ -22,7 +22,7 @@ SAVE_DIR = Path(cfg["paths"]["save_dir"])
 
 os.makedirs(MODELS_DIR, exist_ok=True)
 
-print("🚀 Training models...")
+print("Training models...")
 
 # ================= LOAD FEATURES =================
 features = np.load(os.path.join(SAVE_DIR, "features.npy"))
@@ -37,7 +37,7 @@ if os.path.exists(os.path.join(SAVE_DIR, "features_ssl.npy")):
 num_classes = len(np.unique(labels))
 input_dim = features.shape[1]
 
-# ================= SPLIT ORIGINAL =================
+
 X_temp, X_test, y_temp, y_test = train_test_split(
     features, labels, test_size=0.2, random_state=42, stratify=labels
 )
@@ -50,7 +50,6 @@ train_loader = DataLoader(
     batch_size=32, shuffle=True
 )
 
-# ================= MODELS =================
 class SimpleNN(nn.Module):
     def __init__(self, in_dim, num_classes):
         super().__init__()
@@ -71,7 +70,6 @@ class TinyStudent(nn.Module):
         )
     def forward(self,x): return self.net(x)
 
-# ================= TRAIN FUNCTIONS =================
 def train_model(model, epochs=15):
     model.train()
     opt = optim.Adam(model.parameters(), lr=1e-3)
@@ -114,23 +112,23 @@ def distill(student, teacher, epochs=20):
             print(f"Distill Epoch {epoch+1}, loss {total/len(train_loader):.4f}")
     return student
 
-# ================= 1. LINEAR PROBE (ORIGINAL) =================
-print("\n🔹 Linear Probe (Original)")
+# LINEAR PROBE (ORIGINAL)
+print("\nLinear Probe (Original)")
 lr = LogisticRegression(max_iter=1000, n_jobs=-1)
 lr.fit(X_train, y_train)
 joblib.dump(lr, os.path.join(MODELS_DIR, "linear_probe.pkl"))
 
-# ================= 2. TEACHER =================
-print("\n🔹 Teacher NN")
+# TEACHER 
+print("\nTeacher NN")
 teacher = train_model(SimpleNN(input_dim, num_classes).to(DEVICE))
 torch.save(teacher.state_dict(), os.path.join(MODELS_DIR, "teacher_nn.pth"))
 
-# ================= 3. STUDENT =================
-print("\n🔹 Distilled Student")
+# STUDENT 
+print("\nDistilled Student")
 student = distill(TinyStudent(input_dim, num_classes).to(DEVICE), teacher)
 torch.save(student.state_dict(), os.path.join(MODELS_DIR, "student_nn.pth"))
 
-# ================= 4. SSL LINEAR PROBE =================
+# SSL LINEAR PROBE 
 if SSL_AVAILABLE:
     print("\n🔹 Linear Probe (SSL features)")
     X_train_ssl, X_val_ssl, y_train_ssl, y_val_ssl = train_test_split(
@@ -140,4 +138,4 @@ if SSL_AVAILABLE:
     lr_ssl.fit(X_train_ssl, y_train_ssl)
     joblib.dump(lr_ssl, os.path.join(MODELS_DIR, "linear_probe_ssl.pkl"))
 
-print("\n✅ All models trained and saved in ./models")
+print("\nAll models trained and saved in ./models")

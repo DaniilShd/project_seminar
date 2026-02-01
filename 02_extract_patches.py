@@ -12,7 +12,7 @@ with open("config.yaml", "r") as f:
     cfg = yaml.safe_load(f)
 
 ANNOTATION_PATH = Path(cfg["paths"]["annotation_path"])
-ANNOTATION_PATH_PATCHES = Path(cfg["extract_patches"]["annotation_path"])
+ANNOTATION_PATH_PATCHES = Path(cfg["extract_patches"]["annotation_dir"])
 SAVE_DIR = Path(cfg["extract_patches"]["save_dir_patches"])
 PATH_VISUALIZE = Path(cfg["paths"]["path_visualize"])
 TARGET_SIZE = (cfg["image_params"]["target_width"], cfg["image_params"]["target_height"])

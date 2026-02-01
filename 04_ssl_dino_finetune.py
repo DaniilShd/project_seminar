@@ -12,7 +12,7 @@ with open("config.yaml", "r") as f:
     cfg = yaml.safe_load(f)
 
 PATCH_DIR = Path(cfg["extract_patches"]["save_dir_patches"])
-ANNOTATION_FILE = Path(cfg["extract_features"]["annotation_path"])
+ANNOTATION_FILE = Path(cfg["extract_patches"]["annotation_path"])
 SAVE_DIR = Path(cfg["paths"]["save_dir"])
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -179,4 +179,4 @@ if __name__ == "__main__":
     ssl_model_path = SAVE_DIR / "dinov2_ssl_finetuned.pth"
 
     torch.save({'student_state_dict': model.student.state_dict()}, ssl_model_path)
-    print(f"✅ SSL model saved to {ssl_model_path}")
+    print(f"SSL model saved to {ssl_model_path}")

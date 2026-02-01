@@ -6,9 +6,8 @@ import torchvision.transforms as T
 from PIL import Image
 import numpy as np
 from tqdm import tqdm
-import matplotlib.pyplot as plt
-from sklearn.decomposition import PCA
 import yaml
+from utils.utils import visualize_features
 
 with open("config.yaml", "r") as f:
     cfg = yaml.safe_load(f)
@@ -40,28 +39,6 @@ class PatchFeatureDataset(Dataset):
         img = Image.open(self.dir / name).convert("RGB")
         label = self.data[name]["class"] - 1
         return self.transform(img), label
-
-def visualize_features(features, labels, save_path):
-    # Ограничение до 500 точек для визуализации
-    if len(features) > 500:
-        idx = np.random.choice(len(features), 500, replace=False)
-        features = features[idx]
-        labels = labels[idx]
-
-    pca = PCA(n_components=2)
-    features_2d = pca.fit_transform(features)
-
-    plt.figure(figsize=(10, 8))
-    plt.scatter(features_2d[:, 0], features_2d[:, 1], c=labels, cmap='tab10', alpha=0.7, s=50)
-    plt.colorbar(label='Class')
-    plt.title(f"PCA of Features (Points: {len(features)})")
-    plt.xlabel("PC1")
-    plt.ylabel("PC2")
-    plt.grid(True, alpha=0.3)
-    plt.tight_layout()
-    plt.savefig(save_path, dpi=100, bbox_inches='tight')
-    plt.show()
-    return pca
 
 
 if __name__ == "__main__":
@@ -95,5 +72,5 @@ if __name__ == "__main__":
 
     visualize_features(features, labels, PATH_VISUALIZE / "ssl_features_pca.png")
 
-    print("✅ SSL feature extraction complete!")
+    print("SSL feature extraction complete!")
     print(f"Features shape: {features.shape}")

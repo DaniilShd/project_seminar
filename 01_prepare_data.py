@@ -23,9 +23,9 @@ PATH_VISUALIZE = Path(cfg["paths"]["path_visualize"])
 IMG_WIDTH = cfg['image_params']['img_width']
 IMG_HEIGHT = cfg['image_params']['img_height']
 
-MIN_CONTOUR_AREA = cfg['processing_params']['min_contour_area']
-MIN_BBOX_SIZE = cfg['processing_params']['min_bbox_size']
-CLASS_IDS = cfg['processing_params']['class_ids']
+MIN_CONTOUR_AREA = cfg['extract_patches']['min_contour_area']
+MIN_BBOX_SIZE = cfg['extract_patches']['min_bbox_size']
+CLASS_IDS = cfg['extract_patches']['class_ids']
 
 
 def rle_decode(mask_rle: str, shape: Tuple[int, int]) -> np.ndarray:
@@ -173,6 +173,10 @@ def visualize_annotations(
                 facecolor="none",
             )
             ax.add_patch(rect)
+            
+            ax.text(x_min - 10, y_min - 5, str(class_id), 
+                    color=colors.get(class_id, "white"),
+                    fontsize=8, fontweight='bold')
 
         ax.set_title(f"{img_id} — {len(ann['bboxes'])} объектов")
         ax.axis("off")
@@ -181,7 +185,6 @@ def visualize_annotations(
         plt.tight_layout()
         plt.savefig(save_path)
         plt.close(fig)
-
 
 if __name__ == "__main__":
     annotations = create_json_annotations(CSV_PATH, IMG_DIR, SAVE_PATH)

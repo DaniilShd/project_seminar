@@ -3,12 +3,11 @@ import torch
 import os
 from pathlib import Path
 from PIL import Image
-import matplotlib.pyplot as plt
-from sklearn.decomposition import PCA
 from torch.utils.data import Dataset, DataLoader
 import torchvision.transforms as T
 from tqdm import tqdm
 import numpy as np
+from utils.utils import visualize_features
 
 
 DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -17,8 +16,8 @@ print(f"Using device: {DEVICE}")
 with open("config.yaml", "r") as f:
     cfg = json.load(f) if False else __import__('yaml').safe_load(f)  # если YAML
 
-PATCH_DIR = Path(cfg["extract_features"]["save_dir_patches"])
-ANNOTATION_FILE = Path(cfg["extract_features"]["annotation_path"])
+PATCH_DIR = Path(cfg["extract_patches"]["save_dir_patches"])
+ANNOTATION_FILE = Path(cfg["extract_patches"]["annotation_path"])
 SAVE_DIR = Path(cfg["paths"]["save_dir"])
 VIS_DIR = Path(cfg["paths"]["path_visualize"])
 BATCH_SIZE = (cfg["extract_features"]["batch_size"])
@@ -91,28 +90,6 @@ def extract_features(dataset, model, batch_size=32, device=None):
     else:
         return np.array([]), np.array([])
 
-
-def visualize_features(features, labels, save_path):
-    # Ограничение до 500 точек для визуализации
-    if len(features) > 500:
-        idx = np.random.choice(len(features), 500, replace=False)
-        features = features[idx]
-        labels = labels[idx]
-
-    pca = PCA(n_components=2)
-    features_2d = pca.fit_transform(features)
-
-    plt.figure(figsize=(10, 8))
-    plt.scatter(features_2d[:, 0], features_2d[:, 1], c=labels, cmap='tab10', alpha=0.7, s=50)
-    plt.colorbar(label='Class')
-    plt.title(f"PCA of Features (Points: {len(features)})")
-    plt.xlabel("PC1")
-    plt.ylabel("PC2")
-    plt.grid(True, alpha=0.3)
-    plt.tight_layout()
-    plt.savefig(save_path, dpi=100, bbox_inches='tight')
-    plt.show()
-    return pca
 
 
 if __name__ == "__main__":

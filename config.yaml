@@ -17,6 +17,7 @@ image_params:
 extract_patches:
   save_dir_patches: "./patches/images"
   annotation_path: "./patches/patches_annotation.json"
+  annotation_dir: "./patches"
   min_contour_area: 32
   min_bbox_size: 8
   class_ids: [1, 2, 3, 4]
@@ -27,7 +28,6 @@ extract_features:
   batch_size: 32
   target_size: 224
 
-
 ssl_dino_finetune:
   target_size: 224
   epochs: 3
@@ -37,6 +37,5 @@ ssl_dino_finetune:
   freeze_blocks: 10
 
 training:
-  max_images: null 
   epochs: 3
   models_dir: "./models"
