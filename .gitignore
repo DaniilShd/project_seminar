@@ -1,25 +1,10 @@
-data/
-severstal/
 models/
-yolo_dataset/
-dino_features/
-results/
-DINO/
 dataset/
 visualize/
 patches/
 result/
+report/
 
-# Игнорировать ВСЕ файлы весов YOLO
-*.pt
+
 *.pth
-*.bin
-*.onnx
-*.torchscript
 scripts.sh
-
-# Игнорировать папки с моделями
-models/
-weights/
-checkpoints/
-runs/

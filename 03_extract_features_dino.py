@@ -21,6 +21,7 @@ PATCH_DIR = Path(cfg["extract_features"]["save_dir_patches"])
 ANNOTATION_FILE = Path(cfg["extract_features"]["annotation_path"])
 SAVE_DIR = Path(cfg["paths"]["save_dir"])
 VIS_DIR = Path(cfg["paths"]["path_visualize"])
+BATCH_SIZE = (cfg["extract_features"]["batch_size"])
 
 TARGET_SIZE = (cfg["image_params"]["target_width"], cfg["image_params"]["target_height"])
 os.makedirs(SAVE_DIR, exist_ok=True)

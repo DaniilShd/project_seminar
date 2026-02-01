@@ -8,26 +8,23 @@ from PIL import Image
 from tqdm import tqdm
 import yaml
 
-# ===================== CONFIG =====================
 with open("config.yaml", "r") as f:
     cfg = yaml.safe_load(f)
 
-PATCH_DIR = Path(cfg["ssl_dino_finetune"]["save_dir_patches"])
-ANNOTATION_FILE = Path(cfg["ssl_dino_finetune"]["annotation_path"])
+PATCH_DIR = Path(cfg["extract_patches"]["save_dir_patches"])
+ANNOTATION_FILE = Path(cfg["extract_features"]["annotation_path"])
 SAVE_DIR = Path(cfg["paths"]["save_dir"])
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Using device: {DEVICE}")
 
-TARGET_SIZE = (cfg["ssl_dino_finetune"]["target_size"])
-BATCH_SIZE = (cfg["ssl_dino_finetune"]["batch_size"])
-EPOCHS = (cfg["ssl_dino_finetune"]["epochs"])
+TARGET_SIZE = cfg["ssl_dino_finetune"]["target_size"]
+BATCH_SIZE = cfg["ssl_dino_finetune"]["batch_size"]
+EPOCHS = cfg["ssl_dino_finetune"]["epochs"]
+LEARNING_RATE = float(cfg["ssl_dino_finetune"]["learning_rate"])
+WEIGHT_DECAY = float(cfg["ssl_dino_finetune"]["weight_decay"])
+FREEZE_BLOCKS = int(cfg["ssl_dino_finetune"]["freeze_blocks"])
 
-LEARNING_RATE = (cfg["ssl_dino_finetune"]["learning_rate"])
-WEIGHT_DECAY = (cfg["ssl_dino_finetune"]["weight_decay"])
-
-
-# ===================== SSL AUGMENTATIONS =====================
 class SSLTransform:
     def __init__(self, size=TARGET_SIZE):
         self.global_transform = T.Compose([
@@ -49,7 +46,6 @@ class SSLTransform:
     def __call__(self, img):
         return self.global_transform(img), self.local_transform(img)
 
-# ===================== DATASET =====================
 class SSLPatchDataset(Dataset):
     def __init__(self, ann_path, patches_dir):
         with open(ann_path) as f:
@@ -59,7 +55,7 @@ class SSLPatchDataset(Dataset):
         self.dir = Path(patches_dir)
         self.transform = SSLTransform()
 
-        print(f"SSL patches: {len(self.names)}")
+        print(f"SSL patches found: {len(self.names)}")
 
     def __len__(self):
         return len(self.names)
@@ -68,7 +64,6 @@ class SSLPatchDataset(Dataset):
         img = Image.open(self.dir / self.names[idx]).convert("RGB")
         return self.transform(img)
 
-# ===================== DINO HEAD =====================
 class DINOHead(nn.Module):
     def __init__(self, in_dim=384, out_dim=384):
         super().__init__()
@@ -83,7 +78,6 @@ class DINOHead(nn.Module):
     def forward(self, x):
         return self.mlp(x)
 
-# ===================== MODEL =====================
 class DINOWithMomentum(nn.Module):
     def __init__(self):
         super().__init__()
@@ -96,8 +90,10 @@ class DINOWithMomentum(nn.Module):
         self.teacher.load_state_dict(self.student.state_dict())
         self.teacher_head.load_state_dict(self.student_head.state_dict())
 
-        for p in self.teacher.parameters(): p.requires_grad = False
-        for p in self.teacher_head.parameters(): p.requires_grad = False
+        for p in self.teacher.parameters():
+            p.requires_grad = False
+        for p in self.teacher_head.parameters():
+            p.requires_grad = False
 
         self.register_buffer("center", torch.zeros(384))
         self.momentum = 0.996
@@ -108,9 +104,9 @@ class DINOWithMomentum(nn.Module):
     def update_teacher(self):
         with torch.no_grad():
             for ps, pt in zip(self.student.parameters(), self.teacher.parameters()):
-                pt.data = pt.data * self.momentum + ps.data * (1 - self.momentum)
+                pt.data.mul_(self.momentum).add_(ps.data, alpha=1 - self.momentum)
             for ps, pt in zip(self.student_head.parameters(), self.teacher_head.parameters()):
-                pt.data = pt.data * self.momentum + ps.data * (1 - self.momentum)
+                pt.data.mul_(self.momentum).add_(ps.data, alpha=1 - self.momentum)
 
     def forward(self, x1, x2):
         with torch.no_grad():
@@ -126,11 +122,24 @@ class DINOWithMomentum(nn.Module):
     def update_center(self, teacher_logits):
         with torch.no_grad():
             batch_center = torch.cat(teacher_logits).mean(dim=0)
-            self.center = self.center * self.center_momentum + batch_center * (1 - self.center_momentum)
+            self.center.mul_(self.center_momentum).add_(batch_center * (1 - self.center_momentum))
 
-# ===================== TRAIN =====================
-def train_ssl(model, loader, epochs=3):
-    params = list(model.student.parameters()) + list(model.student_head.parameters())
+def train_ssl(model, loader, epochs):
+    for name, param in model.student.named_parameters():
+        if any(f"blocks.{i}" in name for i in range(0, FREEZE_BLOCKS)):  
+            param.requires_grad = False
+        else:
+            param.requires_grad = True
+
+        if "patch_embed" in name:
+            param.requires_grad = False
+
+    print("Trainable params:",
+          sum(p.numel() for p in model.parameters() if p.requires_grad))
+
+    params = [p for p in model.student.parameters() if p.requires_grad] + \
+             list(model.student_head.parameters())
+
     optimizer = torch.optim.AdamW(params, lr=LEARNING_RATE, weight_decay=WEIGHT_DECAY)
 
     for epoch in range(epochs):
@@ -153,21 +162,21 @@ def train_ssl(model, loader, epochs=3):
 
             model.update_teacher()
             model.update_center(teacher_logits)
-
             total_loss += loss.item()
 
         print(f"Epoch {epoch+1} loss: {total_loss/len(loader):.4f}")
 
     return model
 
-# ===================== RUN =====================
-dataset = SSLPatchDataset(ANNOTATION_FILE, PATCH_DIR)
-loader = DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True, drop_last=True)
+if __name__ == "__main__":
+    dataset = SSLPatchDataset(ANNOTATION_FILE, PATCH_DIR)
+    loader = DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True, drop_last=True)
 
-model = DINOWithMomentum().to(DEVICE)
-model = train_ssl(model, loader, epochs=EPOCHS)
+    model = DINOWithMomentum().to(DEVICE)
+    model = train_ssl(model, loader, epochs=EPOCHS)
 
-ssl_model_path = SAVE_DIR / "dinov2_ssl_finetuned.pth"
-torch.save({'student_state_dict': model.student.state_dict()}, ssl_model_path)
+    SAVE_DIR.mkdir(parents=True, exist_ok=True)
+    ssl_model_path = SAVE_DIR / "dinov2_ssl_finetuned.pth"
 
-print(f"✅ SSL model saved to {ssl_model_path}")
+    torch.save({'student_state_dict': model.student.state_dict()}, ssl_model_path)
+    print(f"✅ SSL model saved to {ssl_model_path}")

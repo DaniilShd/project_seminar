@@ -2,11 +2,11 @@ paths:
   csv_path: "./dataset/train.csv"
   img_dir: "./dataset/train_images"
   save_path: "./dataset/annotations.json"
-  image_dir: "./data/images/"
   annotation_path: "./dataset/annotations.json"
   save_dir: "result/"
   path_visualize: "./visualize"
-  save_dir_patches: "./patches/images"
+  report_dir: "./report"
+
 
 image_params:
   img_width: 1600
@@ -24,20 +24,19 @@ extract_patches:
   max_patches_per_img: 5
 
 extract_features:
-  annotation_path: "./patches/patches_annotation.json"
-  save_dir_patches: "./patches/images"
+  batch_size: 32
+  target_size: 224
 
 
 ssl_dino_finetune:
-  annotation_path: "./patches/patches_annotation.json"
-  save_dir_patches: "./patches/images"
   target_size: 224
   epochs: 3
   batch_size: 32
   learning_rate: 1e-6
   weight_decay: 1e-4
+  freeze_blocks: 10
 
 training:
   max_images: null 
-  epochs_ssl: 3
-  device: "cuda"  
+  epochs: 3
+  models_dir: "./models"
