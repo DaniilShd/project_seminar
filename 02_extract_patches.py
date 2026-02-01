@@ -102,13 +102,11 @@ if __name__ == "__main__":
     patches_annotation = {}
     total_patches = 0
 
-    # Прогресс-бар для изображений
     for img_id, info in tqdm(data.items(), desc="Processing images"):
         img_path = Path(info["image_path"])
         bboxes = info["bboxes"][:MAX_PATCHES_PER_IMG]
         classes = info["classes"][:MAX_PATCHES_PER_IMG]
 
-        # Прогресс-бар для патчей внутри изображения
         for idx, (bbox, cls) in enumerate(tqdm(zip(bboxes, classes), total=len(bboxes), desc=f"{img_id} patches", leave=False)):
             patch, square_bbox = extract_circumscribed_square(img_path, bbox)
             patch_path = save_patch(patch, img_id, idx + 1, SAVE_DIR)
@@ -123,7 +121,7 @@ if __name__ == "__main__":
 
             total_patches += 1
 
-            # Визуализируем каждый N-й патч
+            # Визуализируем каждый 3000 патч
             if total_patches % 3000 == 0:
                 visualize_patch_extraction(img_path, bbox, square_bbox, patch, PATH_VISUALIZE)
 

@@ -22,9 +22,8 @@ SAVE_DIR = Path(cfg["paths"]["save_dir"])
 
 os.makedirs(MODELS_DIR, exist_ok=True)
 
-print("Training models...")
+print("Training models")
 
-# ================= LOAD FEATURES =================
 features = np.load(os.path.join(SAVE_DIR, "features.npy"))
 labels = np.load(os.path.join(SAVE_DIR, "labels.npy"))
 
@@ -138,4 +137,4 @@ if SSL_AVAILABLE:
     lr_ssl.fit(X_train_ssl, y_train_ssl)
     joblib.dump(lr_ssl, os.path.join(MODELS_DIR, "linear_probe_ssl.pkl"))
 
-print("\nAll models trained and saved in ./models")
+print(f"\nAll models trained and saved in {MODELS_DIR}")
