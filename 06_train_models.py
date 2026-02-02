@@ -37,11 +37,8 @@ num_classes = len(np.unique(labels))
 input_dim = features.shape[1]
 
 
-X_temp, X_test, y_temp, y_test = train_test_split(
+X_train, X_test, y_train, y_test = train_test_split(
     features, labels, test_size=0.2, random_state=42, stratify=labels
-)
-X_train, X_val, y_train, y_val = train_test_split(
-    X_temp, y_temp, test_size=0.25, random_state=42, stratify=y_temp
 )
 
 train_loader = DataLoader(
@@ -111,11 +108,11 @@ def distill(student, teacher, epochs=20):
             print(f"Distill Epoch {epoch+1}, loss {total/len(train_loader):.4f}")
     return student
 
-# LINEAR PROBE (ORIGINAL)
-print("\nLinear Probe (Original)")
+# Logistic Regression (ORIGINAL)
+print("\nLogistic Regression (Original)")
 lr = LogisticRegression(max_iter=1000, n_jobs=-1)
 lr.fit(X_train, y_train)
-joblib.dump(lr, os.path.join(MODELS_DIR, "linear_probe.pkl"))
+joblib.dump(lr, os.path.join(MODELS_DIR, "logistic_regression.pkl"))
 
 # TEACHER 
 print("\nTeacher NN")
@@ -127,14 +124,14 @@ print("\nDistilled Student")
 student = distill(TinyStudent(input_dim, num_classes).to(DEVICE), teacher)
 torch.save(student.state_dict(), os.path.join(MODELS_DIR, "student_nn.pth"))
 
-# SSL LINEAR PROBE 
+# SSL Logistic Regression 
 if SSL_AVAILABLE:
-    print("\n🔹 Linear Probe (SSL features)")
-    X_train_ssl, X_val_ssl, y_train_ssl, y_val_ssl = train_test_split(
-        features_ssl, labels_ssl, test_size=0.3, random_state=42, stratify=labels_ssl
+    print("\n🔹 Logistic Regression (SSL features)")
+    X_train_ssl, X_test_ssl, y_train_ssl, y_test_ssl = train_test_split(
+        features_ssl, labels_ssl, test_size=0.2, random_state=42, stratify=labels_ssl
     )
     lr_ssl = LogisticRegression(max_iter=1000, n_jobs=-1)
     lr_ssl.fit(X_train_ssl, y_train_ssl)
-    joblib.dump(lr_ssl, os.path.join(MODELS_DIR, "linear_probe_ssl.pkl"))
+    joblib.dump(lr_ssl, os.path.join(MODELS_DIR, "logistic_regression_ssl.pkl"))
 
 print(f"\nAll models trained and saved in {MODELS_DIR}")
