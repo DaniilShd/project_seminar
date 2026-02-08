@@ -42,6 +42,8 @@ _Пример вырезанного патча дефекта с контекс
 ![alt text](readme_images/5bcc61d96_extraction.png)
 ![alt text](readme_images/b1d3f12b6_extraction.png)
 
+PCA-визуализация — это метод визуализации многомерных данных, при котором для отображения на плоскости (2D) используются первые главные компоненты, полученные с помощью метода главных компонент (PCA — Principal Component Analysis).
+
 _PCA-проекция признаков, извлеченных предобученной DINOv2 (шаг 3)._
 ![alt text](readme_images/features_pca.png)
 

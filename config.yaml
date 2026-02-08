@@ -39,3 +39,5 @@ ssl_dino_finetune:
 training:
   epochs: 3
   models_dir: "./models"
+  temperature: 3.0
+  alpha: 0.7

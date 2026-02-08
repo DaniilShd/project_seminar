@@ -18,6 +18,8 @@ with open("config.yaml", "r") as f:
 DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 MODELS_DIR = (cfg["training"]["models_dir"])
+TEMPERATURE = (cfg["training"]["temperature"])
+ALPHA = (cfg["training"]["alpha"])
 SAVE_DIR = Path(cfg["paths"]["save_dir"])
 
 os.makedirs(MODELS_DIR, exist_ok=True)
@@ -85,8 +87,8 @@ def train_model(model, epochs=15):
 
 def distill(student, teacher, epochs=20):
     opt = optim.Adam(student.parameters(), lr=0.01)
-    T = 3.0
-    alpha = 0.7
+    T = TEMPERATURE
+    alpha = ALPHA
     teacher.eval()
     for epoch in range(epochs):
         total = 0

@@ -78,7 +78,7 @@ class DINOHead(nn.Module):
     def forward(self, x):
         return self.mlp(x)
 
-class DINOWithMomentum(nn.Module):
+class DINO(nn.Module):
     def __init__(self):
         super().__init__()
         self.student = torch.hub.load('facebookresearch/dinov2', 'dinov2_vits14')
@@ -172,7 +172,7 @@ if __name__ == "__main__":
     dataset = SSLPatchDataset(ANNOTATION_FILE, PATCH_DIR)
     loader = DataLoader(dataset, batch_size=BATCH_SIZE, shuffle=True, drop_last=True)
 
-    model = DINOWithMomentum().to(DEVICE)
+    model = DINO().to(DEVICE)
     model = train_ssl(model, loader, epochs=EPOCHS)
 
     SAVE_DIR.mkdir(parents=True, exist_ok=True)
